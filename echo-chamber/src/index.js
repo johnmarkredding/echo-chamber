@@ -48,6 +48,26 @@ server.on('listening', () => {
   console.log(`Server listening on ${address.address}:${address.port}`);
 });
 
+// Listen for the 'listening' event to handle server startup
+server.on('listening', () => {
+  const address = server.address();
+  console.log(`Server listening on ${address.address}:${address.port}`);
+});
+
+// Listen for the 'stream' event to handle incoming streams
+server.on('stream', (stream, headers, flags) => {
+  console.log("--------------Client connected--------------------");
+  if (headers[':path'] === '/sse/') {
+      stream.respond({
+          ':status': 200,
+          'content-type': 'text/event-stream'
+      });
+      setInterval(() => stream.write(`data: ${Math.random()}\n\n`), 2000);
+      stream.on('close', () => console.log("--------------Client closed connection--------------------"));
+  }
+});
+
+
 // Listen for the 'error' event to handle startup errors
 server.on('error', (err) => {
   console.error('Error starting server:', err);
