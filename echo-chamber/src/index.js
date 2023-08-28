@@ -37,10 +37,7 @@ app.get('/sse', (request, reply) => {
 });
 
 // Load SSL certificate and key
-const options = {
-  key: fs.readFileSync('./localhost.direct.key'),
-  cert: fs.readFileSync('./localhost.direct.crt')
-};
+const options = {};
 
 // Create an HTTP/2 server using the provided SSL certificate and private key
 const server = http2.createSecureServer(options, app);
@@ -58,4 +55,4 @@ server.on('error', (err) => {
 });
 
 // Start the server
-server.listen(3000);
+server.listen(process.env.PORT || 3210);
