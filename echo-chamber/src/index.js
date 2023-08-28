@@ -75,4 +75,4 @@ server.on('error', (err) => {
 });
 
 // Start the server
-server.listen(process.env.PORT || 3210);
+server.listen(process.env.PORT || 443);
