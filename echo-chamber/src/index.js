@@ -37,7 +37,10 @@ app.get('/sse', (request, reply) => {
 });
 
 // Create an HTTP/2 server using the provided SSL certificate and private key
-const server = http2.createServer(app);
+const server = http2.createSecureServer({
+  key: fs.readFileSync('server.key'),
+  cert: fs.readFileSync('server.crt'),
+}, app);
 
 // Listen for the 'listening' event to handle server startup
 server.on('listening', () => {
