@@ -13,10 +13,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fastify": "^4.21.0",
-    "graphql-sse": "^2.2.3",
-    "https": "^1.0.0",
-    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
