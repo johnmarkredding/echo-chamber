@@ -1,78 +1,30 @@
 import fs from 'fs';
 import http2 from 'http2';
-import { Observable } from 'rxjs';
-import Fastify from 'fastify';
-const app = Fastify({
-  logger: true
-});
 
+const PORT = process.env.PORT || 443;
+const HOST = process.env.HOST || 'localhost';
 
-// Route for serving SSEs
-app.get('/sse', (request, reply) => {
-  console.log("--------------Client connected--------------------");
-  // Set appropriate headers for SSEs
-  reply.header('Content-Type', 'text/event-stream');
-  reply.header('Cache-Control', 'no-cache');
-  reply.header('Connection', 'keep-alive');
-  reply.header('X-Accel-Buffering', 'no'); // Disable buffering for Nginx
-
-  // Send initial data
-  reply.send(':ok\n\n');
-
-  // Simulate sending SSEs periodically
-  const intervalId = setInterval(() => {
-    const eventData = {
-      event: 'message',
-      data: `Message from server at ${new Date().toISOString()}`
-    };
-
-    reply.send(`event: ${eventData.event}\ndata: ${eventData.data}\n\n`);
-  }, 5000); // Send data every 2 seconds
-
-  // Clean up when the client closes the connection
-  request.raw.on('close', () => {
-    console.log("--------------Client closed connection--------------------");
-    clearInterval(intervalId);
-  });
-});
-
-// Create an HTTP/2 server using the provided SSL certificate and private key
-const server = http2.createSecureServer({
+const serverOptions = {
   key: fs.readFileSync('server.key'),
-  cert: fs.readFileSync('server.crt'),
-}, app);
+  cert: fs.readFileSync('server.crt')
+};
 
-// Listen for the 'listening' event to handle server startup
-server.on('listening', () => {
-  const address = server.address();
-  console.log(`Server listening on ${address.address}:${address.port}`);
-});
+const server = http2.createServer(serverOptions);
 
-// Listen for the 'listening' event to handle server startup
-server.on('listening', () => {
-  const address = server.address();
-  console.log(`Server listening on ${address.address}:${address.port}`);
-});
-
-// Listen for the 'stream' event to handle incoming streams
-server.on('stream', (stream, headers, flags) => {
-  console.log("--------------Client connected--------------------");
-  if (headers[':path'] === '/sse/') {
-      stream.respond({
-          ':status': 200,
-          'content-type': 'text/event-stream'
-      });
-      setInterval(() => stream.write(`data: ${Math.random()}\n\n`), 2000);
-      stream.on('close', () => console.log("--------------Client closed connection--------------------"));
-  }
-});
-
-
-// Listen for the 'error' event to handle startup errors
 server.on('error', (err) => {
-  console.error('Error starting server:', err);
-  process.exit(1);
+  console.error(err);
 });
 
-// Start the server
-server.listen(process.env.PORT || 443);
+server.on('stream', (stream, headers) => {
+  console.log("Hey");
+  stream.respond({
+    'content-type': 'text/html',
+    ':status': 200
+  });
+
+  stream.end('<h1>Hello HTTP/2!</h1>');
+});
+
+server.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
+});
