@@ -9,7 +9,7 @@ const serverOptions = {
   cert: fs.readFileSync('server.crt')
 };
 
-const server = http2.createServer(serverOptions);
+const server = http2.createSecureServer(serverOptions);
 
 server.on('error', (err) => {
   console.error(err);
