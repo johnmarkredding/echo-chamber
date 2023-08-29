@@ -134,3 +134,7 @@ dist
 *.key
 *.crt
 *.cer
+
+# Misc
+*.DS_Store
+*.code-workspace
