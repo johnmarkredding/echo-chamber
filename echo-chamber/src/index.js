@@ -1,10 +1,11 @@
 import fs from 'fs';
 import http2 from 'http2';
 
-const PORT = process.env.PORT || 443;
+const PORT = process.env.PORT || 8443;
 const HOST = process.env.HOST || 'localhost';
 
 const serverOptions = {
+  host: HOST,
   key: fs.readFileSync('server.key'),
   cert: fs.readFileSync('server.crt')
 };
@@ -16,13 +17,34 @@ server.on('error', (err) => {
 });
 
 server.on('stream', (stream, headers) => {
-  console.log("Hey");
-  stream.respond({
-    'content-type': 'text/html',
-    ':status': 200
-  });
+  if (headers[":path"] === '/events') {
+    // Set headers for SSE
+    stream.respond({
+      ':status': 200,
+      'content-type': 'text/event-stream',
+      'cache-control': 'no-cache',
+      'access-control-allow-origin': '*',
+    });
 
-  stream.end('<h1>Hello HTTP/2!</h1>');
+    // Send initial message
+    const initialMessage = 'data: Connected\n\n';
+    stream.write(initialMessage);
+
+    // Send SSE at regular intervals
+    const intervalId = setInterval(() => {
+      const event = `data: ${JSON.stringify({ message: 'Hello from server!' })}\n\n`;
+      stream.write(event);
+    }, 1000);
+
+    // Close the connection when the client disconnects
+    stream.on('close', () => {
+      clearInterval(intervalId);
+    });
+  } else {
+    // For other paths, respond with a 404 status
+    stream.respond({ ':status': 404 });
+    stream.end('Not Found');
+  }
 });
 
 server.listen(PORT, () => {
