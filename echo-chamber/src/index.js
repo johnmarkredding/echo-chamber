@@ -20,7 +20,6 @@ app.register(fastifyCors, {
 
 app.decorateReply('sse', sendServerEvent);
 
-
 app.get('/', (request, reply) => {
   reply.code(404);
   reply.send("Not Found");
