@@ -1,11 +1,9 @@
 import fs from 'fs';
 import fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
-import {FastifySSEPlugin} from "fastify-sse-v2";
-import { insertEcho, getEchoes } from './helpers/index.js';
+import { insertEcho, getEchoes, sendServerEvent } from './helpers/index.js';
 
 const PORT = process.env.PORT || 8443;
-const HOST = process.env.HOST || 'localhost';
 
 const app = fastify({
   http2: true,
@@ -17,17 +15,19 @@ const app = fastify({
 
 app.register(fastifyCors, {
   origin: '*',
-  methods: ['POST', 'GET', 'OPTIONS', 'PATCH', 'DELETE'],
-
+  methods: ['POST', 'GET', 'OPTIONS', 'PATCH', 'DELETE']
 });
-app.register(FastifySSEPlugin);
+
+app.decorateReply('sse', sendServerEvent);
+
 
 app.get('/', (request, reply) => {
   reply.code(404);
   reply.send("Not Found");
 });
+
 app.get('/events', {}, (request, reply) => {
-  reply.sse({data: JSON.stringify(getEchoes())});
+  reply.sse(getEchoes());
 });
 
 app.post('/echo', async (request, reply) => {
