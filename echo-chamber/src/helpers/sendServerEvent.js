@@ -1,4 +1,4 @@
-export default function (data) {
+export default function (data, eventName = 'message') {
     try {
       if (!this.raw.headersSent) {
         this.code(200);
@@ -17,7 +17,7 @@ export default function (data) {
           }
         );
       }
-      this.raw.write(`data: ${JSON.stringify(data)}\n\n`);
+      this.raw.write(`event: ${eventName}\ndata: ${JSON.stringify(data)}\n\n`);
     } catch (sseError) {
       console.error("Error sending SSE:", sseError);
       this.code(500);

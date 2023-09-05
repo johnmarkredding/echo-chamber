@@ -36,6 +36,7 @@ app.get('/echoes', {}, (request, reply) => {
       next: (updatedEchoes) => { reply.sse(updatedEchoes) },
       error: (echoSubscriptionError) => {
         console.error(echoSubscriptionError);
+        reply.sse(echoSubscriptionError, "close");
       },
       complete: () => { console.log("No more permissions changes will be emitted") }
     });
