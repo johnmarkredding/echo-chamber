@@ -26,7 +26,8 @@ app.get('/', (request, reply) => {
 });
 
 app.get('/events', {}, (request, reply) => {
-  reply.sse(getEchoes());
+  setInterval(() => { reply.sse(getEchoes()); }, 1000);
+  // reply.sse(getEchoes());
 });
 
 app.post('/echo', async (request, reply) => {
