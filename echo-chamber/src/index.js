@@ -25,7 +25,7 @@ app.get('/', (request, reply) => {
   reply.send("Not Found");
 });
 
-app.get('/events', {}, (request, reply) => {
+app.get('/echoes', {}, (request, reply) => {
   setInterval(() => { reply.sse(getEchoes()); }, 1000);
   // reply.sse(getEchoes());
 });
