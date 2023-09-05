@@ -6,7 +6,9 @@ export default function (data) {
         'Cache-Control': 'no-cache',
         'Access-Control-Allow-Origin': '*'
       });
-  
+
+      /*Server sent events don't seem to like the fastify abstraction, 
+      so we need to use the raw response. */
       this.raw.writeHead(
         200, {
           'Content-Type': 'text/event-stream',
