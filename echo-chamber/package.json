@@ -6,7 +6,7 @@
   "main": "./src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon ./src/index.js",
+    "dev": "nodemon -r dotenv/config ./src/index.js",
     "start": "node --trace-warnings ./src/index.js"
   },
   "keywords": [],
@@ -15,9 +15,11 @@
   "dependencies": {
     "@fastify/cors": "^8.3.0",
     "fastify": "^4.22.1",
+    "mongodb": "^6.0.0",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "dotenv": "^16.3.1",
     "nodemon": "^3.0.1"
   }
 }
