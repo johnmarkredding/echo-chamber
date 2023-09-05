@@ -7,6 +7,7 @@ export default ({latitude, longitude}) => {
       // Setup GraphQL subscription
       subscriber.next(getEchoes());
     } catch (setupError) {
+      subscriber.error(setupError);
       console.error(setupError);
     }
     return () => {

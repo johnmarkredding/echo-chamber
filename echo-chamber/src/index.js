@@ -2,7 +2,6 @@ import fs from 'fs';
 import fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
 import { insertEcho, sendServerEvent, createEchoStream } from './helpers/index.js';
-import { create } from 'domain';
 
 const PORT = process.env.PORT || 8443;
 
@@ -21,6 +20,7 @@ app.register(fastifyCors, {
 
 app.decorateReply('sse', sendServerEvent);
 
+// Default route
 app.get('/', (request, reply) => {
   reply.code(404);
   reply.send("Not Found");
@@ -31,18 +31,19 @@ app.get('/echoes', {}, (request, reply) => {
   const { latitude, longitude } = request.query;
 
   // Setup Echo subscription based on provided location
-  createEchoStream({latitude, longitude})
+  const echoSubscription = createEchoStream({latitude, longitude})
     .subscribe({
       next: (updatedEchoes) => { reply.sse(updatedEchoes) },
       error: (echoSubscriptionError) => {
         console.error(echoSubscriptionError);
-        reply.code(500);
-        reply.send("Internal Server Error");
       },
       complete: () => { console.log("No more permissions changes will be emitted") }
     });
-  
-  
+
+  // Cleanup subscription when client disconnects
+  reply.raw.on('close', () => {
+    echoSubscription.unsubscribe();
+  });
 });
 
 app.post('/echo', async (request, reply) => {
