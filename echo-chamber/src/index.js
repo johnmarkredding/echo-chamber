@@ -1,7 +1,8 @@
 import fs from 'fs';
 import fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
-import { insertEcho, getEchoes, sendServerEvent } from './helpers/index.js';
+import { insertEcho, sendServerEvent, createEchoStream } from './helpers/index.js';
+import { create } from 'domain';
 
 const PORT = process.env.PORT || 8443;
 
@@ -26,8 +27,22 @@ app.get('/', (request, reply) => {
 });
 
 app.get('/echoes', {}, (request, reply) => {
-  setInterval(() => { reply.sse(getEchoes()); }, 1000);
-  // reply.sse(getEchoes());
+  // Extract query parameters
+  const { latitude, longitude } = request.query;
+
+  // Setup Echo subscription based on provided location
+  createEchoStream({latitude, longitude})
+    .subscribe({
+      next: (updatedEchoes) => { reply.sse(updatedEchoes) },
+      error: (echoSubscriptionError) => {
+        console.error(echoSubscriptionError);
+        reply.code(500);
+        reply.send("Internal Server Error");
+      },
+      complete: () => { console.log("No more permissions changes will be emitted") }
+    });
+  
+  
 });
 
 app.post('/echo', async (request, reply) => {
