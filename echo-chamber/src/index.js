@@ -5,6 +5,7 @@ import { insertEcho, sendServerEvent, createEchoStream } from './helpers/index.j
 
 const PORT = process.env.PORT || 8443;
 
+// Setup Fastify server
 const app = fastify({
   http2: true,
   https: {
@@ -20,7 +21,7 @@ app.register(fastifyCors, {
 
 app.decorateReply('sse', sendServerEvent);
 
-// Default route
+// Routes
 app.get('/', (request, reply) => {
   reply.code(404);
   reply.send("Not Found");
@@ -67,6 +68,7 @@ app.post('/echo', async (request, reply) => {
   }
 });
 
+// Start server
 app.listen({port: PORT}, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
