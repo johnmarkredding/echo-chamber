@@ -1,7 +1,7 @@
 import fs from 'fs';
 import fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
-import { insertEcho, sendServerEvent, createEchoStream } from './helpers/index.js';
+import { insertEcho, sendServerEvent, createMongoStream } from './helpers/index.js';
 
 const PORT = process.env.PORT || 8443;
 
