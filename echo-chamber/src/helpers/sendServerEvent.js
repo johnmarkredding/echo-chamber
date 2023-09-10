@@ -1,4 +1,4 @@
-export default function (data, eventName = 'message') {
+export default function sendServerEvent (data, eventName = 'message') {
     try {
       if (!this.raw.headersSent) {
         this.code(200);
