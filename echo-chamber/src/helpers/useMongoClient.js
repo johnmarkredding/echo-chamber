@@ -10,6 +10,11 @@ const mongoOptions = {
 };
 const echoMongoClient = new MongoClient(mongoUri, mongoOptions);
 
-export default () => {
-  return echoMongoClient;
+// Test
+echoMongoClient.db(process.env.DB_NAME).command({ ping: 4 }).then(console.log).catch(console.error);
+
+export default (dbName = null, collectionName = null) => {
+  const selectedDb = dbName ? echoMongoClient.db(dbName) : echoMongoClient;
+  const selectedCollection = collectionName ? selectedDb.collection(collectionName) : selectedDb;
+  return selectedCollection;
 };
