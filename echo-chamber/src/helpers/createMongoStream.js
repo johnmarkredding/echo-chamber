@@ -2,12 +2,9 @@
 import { Observable } from 'rxjs';
 
 export default (args) => {
-  const {client, dbName, collectionName, pipelineFilter} = args;
+  const { collection, pipelineFilter } = args;
   return new Observable((subscriber) => {
-    const echoChanges = client
-      .db(dbName)
-      .collection(collectionName)
-      .watch(pipelineFilter);
+    const echoChanges = collection.watch(pipelineFilter);
       
     echoChanges.on("change", (e) => subscriber.next(e));
     echoChanges.on("error", (err) => subscriber.error(err));
