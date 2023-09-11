@@ -2,9 +2,18 @@ import fs from 'fs';
 import fastify from 'fastify';
 import { startWith } from 'rxjs';
 import fastifyCors from '@fastify/cors';
-import { insertEcho, sendServerEvent, createEchoStream, useMongoClient } from './helpers/index.js';
+import {
+  insertEcho,
+  sendServerEvent,
+  createEchoStream,
+  useMongoClient
+} from './helpers/index.js';
 
-const PORT = process.env.PORT || 8443;
+const {
+  PORT,
+  DB_NAME,
+  DB_COLLECTION_NAME
+} = process.env;
 
 // Setup Fastify server
 const app = fastify({
@@ -48,7 +57,7 @@ app.get('/echoes', {}, (request, reply) => {
 
 app.post('/echo', async (request, reply) => {
   try {
-    const newEcho = insertEcho(request.body.data, useMongoClient());
+    const newEcho = insertEcho(request.body.data, useMongoClient(DB_NAME, DB_COLLECTION_NAME));
 
     // Send back the complete echo object
     reply
