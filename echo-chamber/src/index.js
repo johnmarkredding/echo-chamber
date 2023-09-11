@@ -57,7 +57,8 @@ app.get('/echoes', {}, (request, reply) => {
 
 app.post('/echo', async (request, reply) => {
   try {
-    const newEcho = insertEcho(request.body.data, useMongoClient(DB_NAME, DB_COLLECTION_NAME));
+    const collection = useMongoClient(DB_NAME, DB_COLLECTION_NAME);
+    const newEcho = insertEcho({ data: request.body.data, collection});
 
     // Send back the complete echo object
     reply
