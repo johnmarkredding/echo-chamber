@@ -1,7 +1,8 @@
 import fs from 'fs';
 import fastify from 'fastify';
+import { startWith } from 'rxjs';
 import fastifyCors from '@fastify/cors';
-import { insertEcho, sendServerEvent, createMongoStream } from './helpers/index.js';
+import { insertEcho, sendServerEvent, createEchoStream, useMongoClient } from './helpers/index.js';
 
 const PORT = process.env.PORT || 8443;
 
@@ -28,9 +29,7 @@ app.get('/', (request, reply) => {
 });
 
 app.get('/echoes', {}, (request, reply) => {
-  // Extract query parameters
   const { latitude, longitude } = request.query;
-
   // Setup Echo subscription based on provided location
   const echoSubscription = createEchoStream({latitude, longitude})
     .subscribe({
@@ -39,9 +38,8 @@ app.get('/echoes', {}, (request, reply) => {
         console.error(echoSubscriptionError);
         reply.sse(echoSubscriptionError, "close");
       },
-      complete: () => { console.log("No more permissions changes will be emitted") }
+      complete: () => { console.log("No more echoes will be emitted") }
     });
-
   // Cleanup subscription when client disconnects
   reply.raw.on('close', () => {
     echoSubscription.unsubscribe();
@@ -50,7 +48,7 @@ app.get('/echoes', {}, (request, reply) => {
 
 app.post('/echo', async (request, reply) => {
   try {
-    const newEcho = insertEcho(request.body.data);
+    const newEcho = insertEcho(request.body.data, useMongoClient());
 
     // Send back the complete echo object
     reply
