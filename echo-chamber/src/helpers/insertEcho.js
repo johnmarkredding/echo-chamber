@@ -11,16 +11,15 @@ export default async ({collection, data}) => {
     const inserted = await collection.insertOne(dbFormattedEcho);
     const { _id, text, location } = await collection.findOne(inserted.insertedId);
     
-    const clientFormattedEcho = {
+    return {
       id: _id.toString(),
       text: text,
       coords: {
         latitude: location.coordinates[0],
         longitude: location.coordinates[1]
-      }
-    };
-
-    return clientFormattedEcho;
+      },
+      timestamp: _id.getTimestamp()
+    }
   } catch (err) {
     console.error(err);
   }
