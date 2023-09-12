@@ -1,25 +1,18 @@
 'use strict'
+import { toClientFormattedEcho } from '../helpers/index.js';
+
 export default async ({collection, data}) => {
   const dbFormattedEcho = {
     text: data.text,
     location: {
       type: "Point",
-      coordinates: [ data.coords.latitude, data.coords.longitude ]
+      coordinates: [ data.coords.longitude, data.coords.latitude ]
     }
   };
   try {
     const inserted = await collection.insertOne(dbFormattedEcho);
-    const { _id, text, location } = await collection.findOne(inserted.insertedId);
+    return toClientFormattedEcho(await collection.findOne(inserted.insertedId));
     
-    return {
-      id: _id.toString(),
-      text: text,
-      coords: {
-        latitude: location.coordinates[0],
-        longitude: location.coordinates[1]
-      },
-      timestamp: _id.getTimestamp()
-    }
   } catch (err) {
     console.error(err);
   }
