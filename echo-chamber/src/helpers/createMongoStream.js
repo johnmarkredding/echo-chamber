@@ -8,7 +8,7 @@ export default (args) => {
       
     echoChanges.on("change", (e) => subscriber.next(e));
     echoChanges.on("error", (err) => subscriber.error(err));
-    echoChanges.on("close", (e) => subscriber.complete(e));
+    echoChanges.on("close", (closeEvent) => subscriber.complete(closeEvent));
     return () => {
       echoChanges.close();
     }
