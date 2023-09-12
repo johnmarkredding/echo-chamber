@@ -1,6 +1,5 @@
 import fs from 'fs';
 import fastify from 'fastify';
-import { startWith } from 'rxjs';
 import fastifyCors from '@fastify/cors';
 import {
   insertEcho,
@@ -37,21 +36,26 @@ app.get('/', (request, reply) => {
   reply.send("Not Found");
 });
 
-app.get('/echoes', {}, (request, reply) => {
-  const { latitude, longitude } = request.query;
+app.get('/echoes', {}, async (request, reply) => {
+  const latitude = Number(request.query.latitude);
+  const longitude = Number(request.query.longitude);
+
   // Setup Echo subscription based on provided location
-  const echoSubscription = createEchoStream({latitude, longitude})
-    .subscribe({
-      next: (updatedEchoes) => { reply.sse(updatedEchoes) },
-      error: (echoSubscriptionError) => {
-        console.error(echoSubscriptionError);
-        reply.sse(echoSubscriptionError, "close");
-      },
-      complete: () => { console.log("No more echoes will be emitted") }
-    });
+  const echoSubscription = await createEchoStream({latitude, longitude});
+
+  echoSubscription.subscribe({
+    next: (updatedEchoes) => {
+      reply.sse(updatedEchoes);
+      console.log(updatedEchoes);
+    },
+    error: (echoSubscriptionError) => {
+      reply.sse(echoSubscriptionError, "close");
+    },
+    complete: () => { console.log("No more echoes will be emitted") }
+  });
   // Cleanup subscription when client disconnects
   reply.raw.on('close', () => {
-    echoSubscription.unsubscribe();
+    echoSubscription?.unsubscribe ? echoSubscription.unsubscribe() : null;
   });
 });
 
