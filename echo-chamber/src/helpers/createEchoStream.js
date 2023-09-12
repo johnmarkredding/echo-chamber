@@ -34,7 +34,7 @@ export default ({latitude,longitude}) => {
   // Grab updated echoes when mongo stream alerts
   const echoStream = new Observable((subscriber) => {
     const mongoSubscription = mongoStream.subscribe({
-      next: (e) => { subscriber.next(getEchoes({latitude,longitude}))},
+      next: (e) => { subscriber.next(getEchoes({latitude,longitude})) },
       error: (mongoSubError) => { console.error(mongoSubError) },
       complete: (e) => { subscriber.complete(e) }
     })
