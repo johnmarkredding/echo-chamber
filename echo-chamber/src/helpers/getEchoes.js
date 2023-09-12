@@ -1,11 +1,19 @@
-export default (coords) => {
-  const getDummyMessage = () => {
-    return { text: 'Help from server!', id: Math.random(), coords};
-  }
+import { toClientFormattedEcho } from "../helpers/index.js";
 
-  return [
-    getDummyMessage(),
-    getDummyMessage(),
-    getDummyMessage()
-  ];
+export default (collection, {latitude, longitude}) => {
+  return collection.find(
+  //   {
+  //   "location": {
+  //     $nearSphere: {
+  //       $geometry: {
+  //         type: "Point",
+  //         coordinates: [longitude, latitude]
+  //       },
+  //       $maxDistance: Number(process.env.QUERY_RADIUS)
+  //     }
+  //   }
+  // }
+  ).toArray()
+    .then((locatedEchoes) => locatedEchoes.map(toClientFormattedEcho))
+    .catch((err) => { console.error("Get Echoes Error", err) });
 };
