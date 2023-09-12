@@ -1,5 +1,5 @@
 'use strict';
-import { Observable, startWith } from 'rxjs';
+import { Observable } from 'rxjs';
 import {
   getEchoes,
   useMongoClient,
@@ -28,9 +28,6 @@ export default ({latitude,longitude}) => {
 
   const collection = useMongoClient(DB_NAME, DB_COLLECTION_NAME);
   const mongoStream = createMongoStream({collection, pipelineFilter})
-    .pipe(
-      startWith(getEchoes(collection, {latitude, longitude}))
-    );
   // Grab updated echoes when mongo stream alerts
   const echoStream = new Observable((subscriber) => {
     const mongoSubscription = mongoStream.subscribe({

@@ -1,9 +1,9 @@
 'use strict';
-import { Observable } from 'rxjs';
+import { Observable, startWith } from 'rxjs';
 
 export default (args) => {
   const { collection, pipelineFilter } = args;
-  return new Observable((subscriber) => {
+  const newMongoStream = new Observable((subscriber) => {
     const echoChanges = collection.watch(pipelineFilter);
       
     echoChanges.on("change", (e) => subscriber.next(e));
@@ -13,4 +13,5 @@ export default (args) => {
       echoChanges.close();
     }
   });
+  return newMongoStream.pipe(startWith("Initial event to load data"));
 };
