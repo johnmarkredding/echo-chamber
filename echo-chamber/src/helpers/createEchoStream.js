@@ -1,12 +1,13 @@
 'use strict';
 import { Observable } from 'rxjs';
+import { metersToRadians } from "../utilities/index.js";
 import {
   getEchoes,
   useMongoClient,
   createMongoStream
 } from "../helpers/index.js";
 const {
-  QUERY_RADIUS,
+  QUERY_RADIUS_M,
   DB_NAME,
   DB_COLLECTION_NAME
 } = process.env;
@@ -19,7 +20,9 @@ export default ({latitude,longitude}) => {
         { operationType: 'insert' },
         {
           'fullDocument.location': {
-            $geoWithin: { $centerSphere: [[longitude, latitude], Number(QUERY_RADIUS)] },
+            $geoWithin: {
+              $centerSphere: [[longitude, latitude], metersToRadians(QUERY_RADIUS_M)]
+            },
           },
         },
       ],
