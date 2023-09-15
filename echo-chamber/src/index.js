@@ -36,27 +36,23 @@ app.get('/', (request, reply) => {
   reply.send("Not Found");
 });
 
-app.get('/echoes', {}, async (request, reply) => {
+app.get('/echoes', async (request, reply) => {
   const latitude = Number(request.query.latitude);
   const longitude = Number(request.query.longitude);
 
   // Setup Echo subscription based on provided location
-  const echoSubscription = await createEchoStream({latitude, longitude});
-
-  echoSubscription.subscribe({
-    next: (updatedEchoes) => {
-      reply.sse(updatedEchoes);
-      console.log(updatedEchoes);
-    },
+  const echoStream = await createEchoStream({latitude, longitude});
+  const echoSubscription = echoStream.subscribe({
+    next: (updatedEchoes) => { reply.sse(updatedEchoes) },
     error: (echoSubscriptionError) => {
-      reply.sse(echoSubscriptionError, "close");
+      console.error(echoSubscriptionError);
+      reply.sse(echoSubscriptionError, "error");
     },
     complete: () => { console.log("No more echoes will be emitted") }
   });
-  // Cleanup subscription when client disconnects
-  reply.raw.on('close', () => {
-    echoSubscription?.unsubscribe ? echoSubscription.unsubscribe() : null;
-  });
+  // Cleanup subscription when client is disconnected
+  reply.raw.on('close', () => { echoSubscription?.unsubscribe() });
+  return reply;
 });
 
 app.post('/echo', async (request, reply) => {
