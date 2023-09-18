@@ -5,11 +5,15 @@ const { QUERY_RADIUS_M } = process.env;
 export default (collection, {latitude, longitude}) => {
   return collection.find(
     {
-    "location": {
-      $geoWithin: {
-        $centerSphere: [[longitude, latitude], metersToRadians(QUERY_RADIUS_M)]
+    $and: [
+      { "timestamp": {$gt: new Date(Date.now() - 360000)} },
+      { "location": {
+          $geoWithin: {
+            $centerSphere: [[longitude, latitude], metersToRadians(QUERY_RADIUS_M)]
+          }
+        }
       }
-    }
+    ]
   }
   ).toArray()
     .then((locatedEchoes) => locatedEchoes.map(toClientFormattedEcho))
