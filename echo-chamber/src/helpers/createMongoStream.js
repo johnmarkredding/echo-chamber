@@ -1,8 +1,7 @@
 'use strict';
 import { Observable, startWith } from 'rxjs';
 
-export default (args) => {
-  const { collection, pipelineFilter } = args;
+export default ({ collection, pipelineFilter }) => {
   const newMongoStream = new Observable((subscriber) => {
     const echoChanges = collection.watch(pipelineFilter);
     echoChanges.on("change", (e) => { subscriber.next(e) });
