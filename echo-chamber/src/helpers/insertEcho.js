@@ -7,7 +7,8 @@ export default async ({collection, data}) => {
     location: {
       type: "Point",
       coordinates: [ data.coords.longitude, data.coords.latitude ]
-    }
+    },
+    timestamp: new Date()
   };
   try {
     const inserted = await collection.insertOne(dbFormattedEcho);
