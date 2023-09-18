@@ -1,11 +1,11 @@
 'use strict'
 
-export default ({ _id, text, location }) => ({
+export default ({ _id, text, location, timestamp }) => ({
   id: _id.toString(),
   text,
   coords: {
     longitude: location.coordinates[0],
     latitude: location.coordinates[1]
   },
-  timestamp: _id.getTimestamp()
+  timestamp
 });
