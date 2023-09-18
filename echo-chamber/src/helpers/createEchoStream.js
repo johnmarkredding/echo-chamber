@@ -16,16 +16,21 @@ export default ({latitude,longitude}) => {
   // Setup mongo observable
   const pipelineFilter = [{
     $match: {
-      $and: [
-        { operationType: 'insert' },
+      $or: [
+        { 'operationType': "delete" },
         {
-          'fullDocument.location': {
-            $geoWithin: {
-              $centerSphere: [[longitude, latitude], metersToRadians(QUERY_RADIUS_M)]
-            },
-          },
-        },
-      ],
+          $and: [
+            { 'operationType': "insert" },
+            {
+              'fullDocument.location': {
+                $geoWithin: {
+                  $centerSphere: [[longitude, latitude], metersToRadians(QUERY_RADIUS_M)]
+                },
+              }
+            }
+          ]
+        }
+      ]
     },
   }];
 
