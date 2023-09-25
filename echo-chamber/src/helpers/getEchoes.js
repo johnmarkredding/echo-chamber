@@ -6,7 +6,7 @@ export default (collection, {latitude, longitude}) => {
   return collection.find(
     {
     $and: [
-      { "timestamp": {$gt: new Date(Date.now() - 360000)} },
+      { "timestamp": {$gt: new Date(Date.now() - 3600000)} },
       { "location": {
           $geoWithin: {
             $centerSphere: [[longitude, latitude], metersToRadians(QUERY_RADIUS_M)]
