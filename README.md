@@ -1,5 +1,5 @@
 # echo-chamber
-GraphQL API counterpart to https://github.com/johnmarkredding/echo.
+API counterpart to https://github.com/johnmarkredding/echo.
 
 ## Development/localhost usage
 - create a `.env` file with `DB_URI="your-mongodb-uri"`.
