@@ -21,7 +21,7 @@ try {
     .then((dbRes) => console.log(dbRes.ok ? "DB reachable!" : dbRes))
     // then create TTL index
     .then(() => {
-      echoMongoClient.db(DB_NAME).collection(DB_COLLECTION_NAME).createIndex({ "timestamp": 1 }, { expireAfterSeconds: DB_ECHO_TTL }).then(console.log);
+      echoMongoClient.db(DB_NAME).collection(DB_COLLECTION_NAME).createIndex({ "timestamp": 1 }, { expireAfterSeconds: Number(DB_ECHO_TTL) }).then(console.log);
     })
     .catch(console.error);
 
