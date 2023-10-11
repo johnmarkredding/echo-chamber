@@ -65,7 +65,7 @@ app.post('/echo', async (request, reply) => {
       .headers({
         'content-type': 'application/json',
         'cache-control': 'no-cache',
-        'access-control-allow-origin': '*',
+        'access-control-allow-origin': '*'
       })
       .send({data: newEcho}); // Echo the data back
   } catch (parseEchoPostError) {

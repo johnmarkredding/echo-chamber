@@ -25,13 +25,13 @@ export default ({latitude,longitude}) => {
               'fullDocument.location': {
                 $geoWithin: {
                   $centerSphere: [[longitude, latitude], metersToRadians(QUERY_RADIUS_M)]
-                },
+                }
               }
             }
           ]
         }
       ]
-    },
+    }
   }];
 
   const collection = useMongoClient(DB_NAME, DB_COLLECTION_NAME);

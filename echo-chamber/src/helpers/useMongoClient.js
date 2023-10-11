@@ -6,7 +6,7 @@ const {DB_URI, DB_ECHO_TTL, DB_NAME, DB_COLLECTION_NAME} = process.env;
 const mongoOptions = {
   serverApi: {
     version: ServerApiVersion.v1,
-    deprecationErrors: true,
+    deprecationErrors: true
   }
 };
 
