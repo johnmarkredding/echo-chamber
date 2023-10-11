@@ -1,11 +1,11 @@
 'use strict';
-import { Observable } from 'rxjs';
-import { metersToRadians } from "../utilities/index.js";
+import {Observable} from 'rxjs';
+import {metersToRadians} from '../utilities/index.js';
 import {
   getEchoes,
   useMongoClient,
   createMongoStream
-} from "../helpers/index.js";
+} from '../helpers/index.js';
 const {
   QUERY_RADIUS_M,
   DB_NAME,
@@ -17,10 +17,10 @@ export default ({latitude,longitude}) => {
   const pipelineFilter = [{
     $match: {
       $or: [
-        { 'operationType': "delete" },
+        {'operationType': 'delete'},
         {
           $and: [
-            { 'operationType': "insert" },
+            {'operationType': 'insert'},
             {
               'fullDocument.location': {
                 $geoWithin: {
@@ -35,11 +35,11 @@ export default ({latitude,longitude}) => {
   }];
 
   const collection = useMongoClient(DB_NAME, DB_COLLECTION_NAME);
-  const mongoStream = createMongoStream({collection, pipelineFilter})
+  const mongoStream = createMongoStream({collection, pipelineFilter});
   // Grab updated echoes when mongo stream alerts
   const echoStream = new Observable((subscriber) => {
     const mongoSubscription = mongoStream.subscribe({
-      next: (e) => {
+      next: () => {
         getEchoes(collection, {latitude, longitude})
           .then((fetchedEchoes) => {
             subscriber.next(fetchedEchoes);
@@ -47,13 +47,13 @@ export default ({latitude,longitude}) => {
           })
           .catch((err) => console.error(err));
       },
-      error: (mongoSubError) => { subscriber.error(mongoSubError) },
-      complete: (e) => { subscriber.complete(e) }
-    })
+      error: (mongoSubError) => {subscriber.error(mongoSubError)},
+      complete: (e) => {subscriber.complete(e)}
+    });
     return () => {
       mongoSubscription.unsubscribe();
-    }
-  })
+    };
+  });
 
   // Return echo observable
   return echoStream;

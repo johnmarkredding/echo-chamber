@@ -4,7 +4,7 @@ const sseHeaders = {
   'Access-Control-Allow-Origin': '*'
 };
 
-export default function sendServerEvent (data, eventName = "message") {
+export default function sendServerEvent (data, eventName = 'message') {
   try {
     // Can't set headers after sending the first message
     if (!this.raw.headersSent) {
@@ -14,10 +14,10 @@ export default function sendServerEvent (data, eventName = "message") {
       so we need to use the raw response. */
       this.raw.writeHead(200, sseHeaders);
     }
-    this.raw.write(`event: ${eventName}\ndata: ${JSON.stringify(data || "No data")}\n\n`);
+    this.raw.write(`event: ${eventName}\ndata: ${JSON.stringify(data || 'No data')}\n\n`);
   } catch (sseError) {
-    console.error("Error sending SSE:", sseError);
+    console.error('Error sending SSE:', sseError);
     this.code(500);
-    this.send("Internal Server Error");
+    this.send('Internal Server Error');
   }
 }

@@ -33,7 +33,7 @@ app.decorateReply('sse', sendServerEvent);
 // Routes
 app.get('/', (request, reply) => {
   reply.code(404);
-  reply.send("Not Found");
+  reply.send('Not Found');
 });
 
 app.get('/echoes', async (request, reply) => {
@@ -43,22 +43,22 @@ app.get('/echoes', async (request, reply) => {
   // Setup Echo subscription based on provided location
   const echoStream = await createEchoStream({latitude, longitude});
   const echoSubscription = echoStream.subscribe({
-    next: (updatedEchoes) => { reply.sse(updatedEchoes) },
+    next: (updatedEchoes) => {reply.sse(updatedEchoes)},
     error: (echoSubscriptionError) => {
       console.error(echoSubscriptionError);
-      reply.sse(echoSubscriptionError, "error");
+      reply.sse(echoSubscriptionError, 'error');
     },
-    complete: () => { console.log("No more echoes will be emitted") }
+    complete: () => {console.log('No more echoes will be emitted')}
   });
   // Cleanup subscription when client is disconnected
-  reply.raw.on('close', () => { echoSubscription?.unsubscribe() });
+  reply.raw.on('close', () => {echoSubscription?.unsubscribe()});
   return reply;
 });
 
 app.post('/echo', async (request, reply) => {
   try {
     const collection = useMongoClient(DB_NAME, DB_COLLECTION_NAME);
-    const newEcho = await insertEcho({ data: request.body.data, collection});
+    const newEcho = await insertEcho({data: request.body.data, collection});
     // Send back the complete echo object
     reply
       .code(200)
@@ -69,7 +69,7 @@ app.post('/echo', async (request, reply) => {
       })
       .send({data: newEcho}); // Echo the data back
   } catch (parseEchoPostError) {
-    console.error("Error parsing JSON:", parseEchoPostError);
+    console.error('Error parsing JSON:', parseEchoPostError);
     reply.code(400); // Bad request
     reply.send('Bad Request');
   }

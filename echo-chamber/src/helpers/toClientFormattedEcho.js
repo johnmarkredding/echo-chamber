@@ -1,6 +1,6 @@
-'use strict'
+'use strict';
 
-export default ({ _id, text, location, timestamp }) => ({
+export default ({_id, text, location, timestamp}) => ({
   id: _id.toString(),
   text,
   coords: {

@@ -1,12 +1,12 @@
-'use strict'
-import { toClientFormattedEcho } from '../helpers/index.js';
+'use strict';
+import {toClientFormattedEcho} from '../helpers/index.js';
 
 export default async ({collection, data}) => {
   const dbFormattedEcho = {
     text: data.text,
     location: {
-      type: "Point",
-      coordinates: [ data.coords.longitude, data.coords.latitude ]
+      type: 'Point',
+      coordinates: [data.coords.longitude, data.coords.latitude]
     },
     timestamp: new Date()
   };
