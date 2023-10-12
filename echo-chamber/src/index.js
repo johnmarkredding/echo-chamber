@@ -11,15 +11,17 @@ import {
 const {
   PORT,
   DB_NAME,
-  DB_COLLECTION_NAME
+  DB_COLLECTION_NAME,
+  TLS_KEY_PATH,
+  TLS_CERT_PATH
 } = process.env;
 
 // Setup Fastify server
 const app = fastify({
   http2: true,
   https: {
-    key: fs.readFileSync('server.key'),
-    cert: fs.readFileSync('server.crt')
+    key: fs.readFileSync(TLS_KEY_PATH),
+    cert: fs.readFileSync(TLS_CERT_PATH)
   }
 });
 
