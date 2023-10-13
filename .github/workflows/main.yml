@@ -26,10 +26,15 @@ jobs:
         aws configure set region ${{ secrets.AWS_REGION }} --profile ecr-user
         aws ecr get-login-password --profile ecr-user | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
+    - name: Set Version Tag
+      run: version_tag=$(date +%y%m%w%d%H%M%S)
+
     - name: Tag Docker image
       run: |
         docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
-        docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:$(date +%y%m%w%d%H%M%S)
+        docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:$version_tag
 
     - name: Push Docker image to AWS ECR
-      run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
+      run: |
+        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
+        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:$version_tag
