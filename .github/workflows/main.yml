@@ -3,7 +3,7 @@ name: Dockerized Echo Chamber API CD
 on:
   push:
     branches:
-      - main # Adjust this to match your branch name
+      - main
 
 jobs:
   deploy:
