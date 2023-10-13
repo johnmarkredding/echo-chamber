@@ -1,0 +1,32 @@
+name: Dockerized Echo Chamber API CD
+
+on:
+  push:
+    branches:
+      - main # Adjust this to match your branch name
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4.1.0
+
+    - name: Set up Docker
+      uses: docker/setup-qemu-action@v3.0.0
+
+    - name: Build Docker image
+      run: docker build -t echo-chamber:latest -f Dockerfile .
+
+    - name: AWS ECR Login
+      run: |
+        echo ${{ secrets.AWS_ACCESS_KEY }} | aws configure set aws_access_key_id --profile ecr user
+        echo ${{ secrets.AWS_SECRET_KEY }} | aws configure set aws_secret_access_key --profile ecr user
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} --profile ecr | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    - name: Tag Docker image
+      run: docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
+
+    - name: Push Docker image to AWS ECR
+      run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
