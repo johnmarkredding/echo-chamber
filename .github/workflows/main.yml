@@ -27,14 +27,19 @@ jobs:
         aws ecr get-login-password --profile ecr-user | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
     - name: Set Version Tag
-      run: version_tag=$(date +%y%m%w%d%H%M%S)
+      id: set-version-tag
+      run: |
+        echo "::set-output name=version_tag::$(date +%y%m%w%d%H%M%S)"
+      shell: bash
 
     - name: Tag Docker image
       run: |
+        version_tag=${{ steps.set-version-tag.outputs.version_tag }}
         docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
         docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:$version_tag
 
     - name: Push Docker image to AWS ECR
       run: |
+        version_tag=${{ steps.set-version-tag.outputs.version_tag }}
         docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
         docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:$version_tag
