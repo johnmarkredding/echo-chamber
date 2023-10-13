@@ -17,7 +17,7 @@ jobs:
       uses: docker/setup-qemu-action@v3.0.0
 
     - name: Build Docker image
-      run: docker build -t your-app-name:latest -f Dockerfile .
+      run: docker build -t echo-chamber:latest -f Dockerfile .
 
     - name: AWS ECR Login
       run: |
@@ -26,7 +26,7 @@ jobs:
         aws ecr get-login-password --region ${{ secrets.AWS_REGION }} --profile ecr | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
     - name: Tag Docker image
-      run: docker tag your-app-name:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_REPO_NAME }}:latest
+      run: docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
 
     - name: Push Docker image to AWS ECR
-      run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_REPO_NAME }}:latest
+      run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
