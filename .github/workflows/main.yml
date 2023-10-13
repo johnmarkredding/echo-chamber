@@ -21,9 +21,11 @@ jobs:
 
     - name: AWS ECR Login
       run: |
-        echo ${{ secrets.AWS_ACCESS_KEY }} | aws configure set aws_access_key_id --profile ecr-user
-        echo ${{ secrets.AWS_SECRET_KEY }} | aws configure set aws_secret_access_key --profile ecr-user
-        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} --profile ecr-user | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY }} --profile ecr-user
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_KEY }} --profile ecr-user
+        aws configure set region ${{ secrets.AWS_REGION }} --profile ecr-user
+        aws --version
+        aws ecr get-login-password --profile ecr-user | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
     - name: Tag Docker image
       run: docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
