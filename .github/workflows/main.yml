@@ -27,7 +27,9 @@ jobs:
         aws ecr get-login-password --profile ecr-user | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
     - name: Tag Docker image
-      run: docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
+      run: |
+        docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
+        docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:$(date +%T)
 
     - name: Push Docker image to AWS ECR
       run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
