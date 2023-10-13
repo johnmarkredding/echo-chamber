@@ -24,7 +24,7 @@ jobs:
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         unzip awscliv2.zip
         sudo ./aws/install
-        aws --version}{
+        aws --version
         echo ${{ secrets.AWS_ACCESS_KEY }} | aws configure set aws_access_key_id --profile ecr-user
         echo ${{ secrets.AWS_SECRET_KEY }} | aws configure set aws_secret_access_key --profile ecr-user
         aws ecr get-login-password --region ${{ secrets.AWS_REGION }} --profile ecr-user | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
