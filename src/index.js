@@ -10,6 +10,7 @@ import {
 
 const {
   PORT,
+  HOST,
   DB_NAME,
   DB_COLLECTION_NAME,
   TLS_KEY_PATH,
@@ -78,6 +79,6 @@ app.post('/echo', async (request, reply) => {
 });
 
 // Start server
-app.listen({port: PORT}, () => {
+app.listen({port: PORT, host: HOST}, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
