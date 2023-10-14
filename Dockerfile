@@ -5,7 +5,8 @@ COPY package-lock.json .
 RUN npm ci --omit=dev
 
 FROM gcr.io/distroless/nodejs20-debian11
-COPY --from=build-env /app/node_modules /app/node_modules
+COPY --from=build-env /app /app
 WORKDIR /app
-COPY /src /src
+COPY . .
+EXPOSE 8443
 CMD ["src/index.js"]
