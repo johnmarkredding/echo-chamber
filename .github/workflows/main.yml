@@ -29,12 +29,13 @@ jobs:
     - name: Set Version Tag
       id: set-version-tag
       run: |
-        echo "::set-output name=version_tag::$(date +%y%m%w%d%H%M%S)"
+        echo "version_tag=$(date +%y%m%w%d%H%M%S)" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Tag Docker image
       run: |
         version_tag=${{ steps.set-version-tag.outputs.version_tag }}
+        echo $version_tag
         docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
         docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:$version_tag
 
