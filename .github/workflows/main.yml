@@ -29,42 +29,34 @@ jobs:
         aws configure set region ${{ secrets.AWS_REGION }} --profile ecr-user
         aws ecr get-login-password --profile ecr-user | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
-    - name: Cert-loader repo exists?
+    - name: Ensure cert-loader repo exists
       id: cert-loader-repo-check
       run: |
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY }} --profile ecr-user
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_KEY }} --profile ecr-user
+        aws configure set region ${{ secrets.AWS_REGION }} --profile ecr-user
         repo_name="cert-loader"
-        if aws ecr describe-repositories --repository-names $repo_name 2>/dev/null; then
+        if aws ecr describe-repositories --profile ecr-user --repository-names $repo_name 2>/dev/null; then
           echo "Repo $repo_name already exists."
-          echo "exists=true" >> $GITHUB_OUTPUT
         else
-          echo "Repo $repo_name doesn't exist."
-          echo "exists=false" >> $GITHUB_OUTPUT
+          echo "Creating repo $repo_name"
+          aws ecr create-repository --profile ecr-user --repository-name $repo_name
         fi
       shell: bash
 
-    - name: Create cert-loader repo?
-      if: steps.cert-loader-repo-check.outputs.exists != 'true'
-      run: |
-        aws ecr create-repository --repository-name cert-loader
-      shell: bash
-
-    - name: Echo-chamber repo exists?
+    - name: Ensure echo-chamber repo exists
       id: echo-chamber-repo-check
       run: |
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY }} --profile ecr-user
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_KEY }} --profile ecr-user
+        aws configure set region ${{ secrets.AWS_REGION }} --profile ecr-user
         repo_name="echo-chamber"
-        if aws ecr describe-repositories --repository-names $repo_name 2>/dev/null; then
+        if aws ecr describe-repositories --profile ecr-user --repository-names $repo_name 2>/dev/null; then
           echo "Repo $repo_name already exists."
-          echo "exists=true" >> $GITHUB_OUTPUT
         else
-          echo "Repo $repo_name doesn't exist."
-          echo "exists=false" >> $GITHUB_OUTPUT
+          echo "Creating repo $repo_name"
+          aws ecr create-repository --profile ecr-user --repository-name $repo_name
         fi
-      shell: bash
-
-    - name: Create echo-chamber repo?
-      if: steps.echo-chamber-repo-check.outputs.exists != 'true'
-      run: |
-        aws ecr create-repository --repository-name echo-chamber
       shell: bash
 
     - name: Set Version Tag
