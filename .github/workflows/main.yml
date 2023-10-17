@@ -16,8 +16,11 @@ jobs:
     - name: Set up Docker
       uses: docker/setup-qemu-action@v3.0.0
 
-    - name: Build Docker image
-      run: docker build -t echo-chamber:latest -f Dockerfile .
+    - name: Build cert-loader image
+      run: docker build -t cert-loader:latest ./cert-loader
+
+    - name: Build echo-chamber image
+      run: docker build -t echo-chamber:latest .
 
     - name: AWS ECR Login
       run: |
@@ -32,14 +35,27 @@ jobs:
         echo "version_tag=$(date +%y%m%w%d%H%M%S)" >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Tag Docker image
+    - name: Tag cert-loader image
+      run: |
+        version_tag=${{ steps.set-version-tag.outputs.version_tag }}
+        echo $version_tag
+        docker tag cert-loader:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/cert-loader:latest
+        docker tag cert-loader:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/cert-loader:$version_tag
+
+    - name: Tag echo-chamber image
       run: |
         version_tag=${{ steps.set-version-tag.outputs.version_tag }}
         echo $version_tag
         docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
         docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:$version_tag
 
-    - name: Push Docker image to AWS ECR
+    - name: Push cert-loader image to AWS ECR
+      run: |
+        version_tag=${{ steps.set-version-tag.outputs.version_tag }}
+        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/cert-loader:latest
+        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/cert-loader:$version_tag
+
+    - name: Push echo-chamber image to AWS ECR
       run: |
         version_tag=${{ steps.set-version-tag.outputs.version_tag }}
         docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
