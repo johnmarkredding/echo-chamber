@@ -38,14 +38,12 @@ jobs:
     - name: Tag cert-loader image
       run: |
         version_tag=${{ steps.set-version-tag.outputs.version_tag }}
-        echo $version_tag
         docker tag cert-loader:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/cert-loader:latest
         docker tag cert-loader:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/cert-loader:$version_tag
 
     - name: Tag echo-chamber image
       run: |
         version_tag=${{ steps.set-version-tag.outputs.version_tag }}
-        echo $version_tag
         docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:latest
         docker tag echo-chamber:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/echo-chamber:$version_tag
 
