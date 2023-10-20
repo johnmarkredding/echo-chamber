@@ -14,7 +14,8 @@ const {
   DB_NAME,
   DB_COLLECTION_NAME,
   TLS_KEY_PATH,
-  TLS_CERT_PATH
+  TLS_CERT_PATH,
+  TLS_KEY_PASSPHRASE
 } = process.env;
 
 // Setup Fastify server
@@ -22,7 +23,8 @@ const app = fastify({
   http2: true,
   https: {
     key: fs.readFileSync(TLS_KEY_PATH),
-    cert: fs.readFileSync(TLS_CERT_PATH)
+    cert: fs.readFileSync(TLS_CERT_PATH),
+    passphrase: TLS_KEY_PASSPHRASE
   }
 });
 
