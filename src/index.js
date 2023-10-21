@@ -44,9 +44,10 @@ app.get('/', (request, reply) => {
 app.get('/echoes', async (request, reply) => {
   const latitude = Number(request.query.latitude);
   const longitude = Number(request.query.longitude);
+  const radius = Number(request.query.radius);
 
   // Setup Echo subscription based on provided location
-  const echoStream = await createEchoStream({latitude, longitude});
+  const echoStream = await createEchoStream({latitude, longitude, radius});
   const echoSubscription = echoStream.subscribe({
     next: (updatedEchoes) => {reply.sse(updatedEchoes)},
     error: (echoSubscriptionError) => {
