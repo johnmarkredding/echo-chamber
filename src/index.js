@@ -46,6 +46,8 @@ app.get('/echoes', async (request, reply) => {
   const longitude = Number(request.query.longitude);
   const radius = Number(request.query.radius);
 
+  const heartbeatInterval = setInterval(() => reply.sse('Heartbeat'), 1000);
+
   // Setup Echo subscription based on provided location
   const echoStream = await createEchoStream({latitude, longitude, radius});
   const echoSubscription = echoStream.subscribe({
@@ -57,7 +59,10 @@ app.get('/echoes', async (request, reply) => {
     complete: () => {console.log('No more echoes will be emitted')}
   });
   // Cleanup subscription when client is disconnected
-  reply.raw.on('close', () => {echoSubscription?.unsubscribe()});
+  reply.raw.on('close', () => {
+    clearInterval(heartbeatInterval);
+    echoSubscription?.unsubscribe();
+  });
   return reply;
 });
 
