@@ -7,12 +7,11 @@ import {
   createMongoStream
 } from '../helpers/index.js';
 const {
-  QUERY_RADIUS_M,
   DB_NAME,
   DB_COLLECTION_NAME
 } = process.env;
 
-export default ({latitude,longitude}) => {
+export default ({latitude,longitude,radius}) => {
   // Setup mongo observable
   const pipelineFilter = [{
     $match: {
@@ -24,7 +23,7 @@ export default ({latitude,longitude}) => {
             {
               'fullDocument.location': {
                 $geoWithin: {
-                  $centerSphere: [[longitude, latitude], metersToRadians(QUERY_RADIUS_M)]
+                  $centerSphere: [[longitude, latitude], metersToRadians(radius)]
                 }
               }
             }
@@ -40,7 +39,7 @@ export default ({latitude,longitude}) => {
   const echoStream = new Observable((subscriber) => {
     const mongoSubscription = mongoStream.subscribe({
       next: () => {
-        getEchoes(collection, {latitude, longitude})
+        getEchoes(collection, {latitude, longitude, radius})
           .then((fetchedEchoes) => {
             subscriber.next(fetchedEchoes);
             return fetchedEchoes;
